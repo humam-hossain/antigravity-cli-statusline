@@ -12,6 +12,8 @@ if (-not (Test-Path $installDir)) {
 
 $sourceScript = Join-Path $PSScriptRoot "statusline.ps1"
 $targetScript = Join-Path $installDir "statusline.ps1"
+$sourceUninstall = Join-Path $PSScriptRoot "uninstall.ps1"
+$targetUninstall = Join-Path $installDir "uninstall.ps1"
 
 if (-not (Test-Path $sourceScript)) {
     Write-Error "Could not find statusline.ps1 in: $PSScriptRoot"
@@ -20,6 +22,11 @@ if (-not (Test-Path $sourceScript)) {
 
 Write-Host "Copying statusline.ps1 to $targetScript..."
 Copy-Item -Path $sourceScript -Destination $targetScript -Force
+
+if (Test-Path $sourceUninstall) {
+    Write-Host "Copying uninstall.ps1 to $targetUninstall..."
+    Copy-Item -Path $sourceUninstall -Destination $targetUninstall -Force
+}
 
 # Configuration file
 $settingsFile = "$HOME\.gemini\antigravity-cli\settings.json"
@@ -66,4 +73,5 @@ if (Test-Path $settingsFile) {
 Write-Host "====================================================" -ForegroundColor Blue
 Write-Host "🎉 Installation completed successfully!" -ForegroundColor Green
 Write-Host "Restart your Antigravity CLI session to see your new statusline."
+Write-Host "Uninstaller copied to: $targetUninstall"
 Write-Host "====================================================" -ForegroundColor Blue

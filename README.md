@@ -32,9 +32,9 @@ Wraps status into a clean two-line boxed block to avoid command output line wrap
 Choose the installation command for your operating system:
 
 ### 🐧 macOS / Linux
-Run this one-liner to clone the repository to a temporary directory and run the installer:
+Run this one-liner to clone the repository to a temporary directory, run the installer, and automatically clean up the temporary folder:
 ```bash
-git clone https://github.com/weby-homelab/antigravity-cli-statusline.git /tmp/antigravity-cli-statusline && /tmp/antigravity-cli-statusline/install.sh
+git clone https://github.com/weby-homelab/antigravity-cli-statusline.git /tmp/antigravity-cli-statusline && /tmp/antigravity-cli-statusline/install.sh && rm -rf /tmp/antigravity-cli-statusline
 ```
 
 **Manual Installation:**
@@ -51,9 +51,9 @@ git clone https://github.com/weby-homelab/antigravity-cli-statusline.git /tmp/an
 ---
 
 ### 🪟 Windows (PowerShell)
-Run this one-liner in PowerShell (run as Administrator if your execution policy is restricted):
+Run this one-liner in PowerShell (run as Administrator if your execution policy is restricted) to install and automatically clean up the temporary directory:
 ```powershell
-git clone https://github.com/weby-homelab/antigravity-cli-statusline.git $env:TEMP/antigravity-cli-statusline; cd $env:TEMP/antigravity-cli-statusline; Powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
+git clone https://github.com/weby-homelab/antigravity-cli-statusline.git $env:TEMP/antigravity-cli-statusline; Powershell -NoProfile -ExecutionPolicy Bypass -File $env:TEMP/antigravity-cli-statusline/install.ps1; Remove-Item -Recurse -Force $env:TEMP/antigravity-cli-statusline
 ```
 
 **Manual Installation:**
@@ -71,18 +71,16 @@ git clone https://github.com/weby-homelab/antigravity-cli-statusline.git $env:TE
 
 ## 🗑️ Uninstallation
 
-If you wish to remove the statusline, you can run the uninstaller script.
+The installation script places a dedicated uninstaller script in your permanent `~/.antigravity` folder. You can run it directly from anywhere without needing the original git clone directory.
 
 ### 🐧 macOS / Linux
 ```bash
-cd antigravity-cli-statusline
-./uninstall.sh
+~/.antigravity/uninstall.sh
 ```
 
 ### 🪟 Windows (PowerShell)
 ```powershell
-cd antigravity-cli-statusline
-Powershell -NoProfile -ExecutionPolicy Bypass -File .\uninstall.ps1
+Powershell -NoProfile -ExecutionPolicy Bypass -File $HOME\.antigravity\uninstall.ps1
 ```
 
 ---

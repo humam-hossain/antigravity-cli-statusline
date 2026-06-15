@@ -6,6 +6,7 @@ Write-Host "====================================================" -ForegroundCol
 
 $installDir = Join-Path $HOME ".antigravity"
 $targetScript = Join-Path $installDir "statusline.ps1"
+$targetUninstall = Join-Path $installDir "uninstall.ps1"
 
 if (Test-Path $targetScript) {
     Write-Host "Removing statusline script: $targetScript..."
@@ -25,6 +26,15 @@ if (Test-Path $settingsFile) {
             $json.statusLine.enabled = $false
             $json | ConvertTo-Json -Depth 100 | Out-File -FilePath $settingsFile -Encoding utf8
         }
+    }
+}
+
+if (Test-Path $targetUninstall) {
+    Write-Host "Removing uninstaller: $targetUninstall..."
+    Remove-Item -Path $targetUninstall -Force
+    # Remove directory if empty
+    if ((Get-ChildItem -Path $installDir | Measure-Object).Count -eq 0) {
+        Remove-Item -Path $installDir -Force
     }
 }
 

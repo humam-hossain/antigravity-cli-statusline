@@ -15,6 +15,7 @@ echo -e "${BLUE}====================================================${RESET}"
 
 INSTALL_DIR="$HOME/.antigravity"
 SCRIPT_TARGET="${INSTALL_DIR}/statusline.sh"
+UNINSTALL_TARGET="${INSTALL_DIR}/uninstall.sh"
 
 if [ -f "$SCRIPT_TARGET" ]; then
   echo -e "Removing statusline script: ${SCRIPT_TARGET}..."
@@ -25,7 +26,7 @@ SETTINGS_FILE="$HOME/.gemini/antigravity-cli/settings.json"
 
 if [ -f "$SETTINGS_FILE" ]; then
   echo -e "Disabling statusline in configuration..."
-  # If a backup exists, offer to restore or modify using jq
+  # If a backup exists, restore it
   if [ -f "${SETTINGS_FILE}.bak" ]; then
     echo -e "Restoring backup settings from ${SETTINGS_FILE}.bak..."
     mv "${SETTINGS_FILE}.bak" "$SETTINGS_FILE"
@@ -39,6 +40,13 @@ if [ -f "$SETTINGS_FILE" ]; then
       echo -e "${YELLOW}Warning: 'jq' not found. Please manually set 'statusLine.enabled: false' in ${SETTINGS_FILE}${RESET}"
     fi
   fi
+fi
+
+# Finally, clean up itself and the directory if empty
+if [ -f "$UNINSTALL_TARGET" ]; then
+  echo -e "Removing uninstaller: ${UNINSTALL_TARGET}..."
+  rm -f "$UNINSTALL_TARGET"
+  rmdir "$INSTALL_DIR" 2>/dev/null || true
 fi
 
 echo -e "${BLUE}====================================================${RESET}"

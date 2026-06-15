@@ -8,8 +8,6 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
-NC='\033[0;5m' # No Color
-NC_BOLD='\033[1m'
 RESET='\033[0m'
 
 echo -e "${BLUE}====================================================${RESET}"
@@ -35,6 +33,8 @@ mkdir -p "$INSTALL_DIR"
 # 3. Copy files
 SCRIPT_SOURCE="$(dirname "$0")/statusline.sh"
 SCRIPT_TARGET="${INSTALL_DIR}/statusline.sh"
+UNINSTALL_SOURCE="$(dirname "$0")/uninstall.sh"
+UNINSTALL_TARGET="${INSTALL_DIR}/uninstall.sh"
 
 if [ ! -f "$SCRIPT_SOURCE" ]; then
   echo -e "${RED}Error: Cannot find statusline.sh in $(dirname "$0")${RESET}"
@@ -44,6 +44,12 @@ fi
 echo -e "Copying statusline.sh to ${SCRIPT_TARGET}..."
 cp "$SCRIPT_SOURCE" "$SCRIPT_TARGET"
 chmod +x "$SCRIPT_TARGET"
+
+if [ -f "$UNINSTALL_SOURCE" ]; then
+  echo -e "Copying uninstall.sh to ${UNINSTALL_TARGET}..."
+  cp "$UNINSTALL_SOURCE" "$UNINSTALL_TARGET"
+  chmod +x "$UNINSTALL_TARGET"
+fi
 
 # 4. Configure settings.json
 SETTINGS_FILE="$HOME/.gemini/antigravity-cli/settings.json"
@@ -77,4 +83,5 @@ fi
 echo -e "${BLUE}====================================================${RESET}"
 echo -e "${GREEN}🎉 Installation completed successfully!${RESET}"
 echo -e "Start a new antigravity session to see your new statusline."
+echo -e "Uninstaller copied to: ${UNINSTALL_TARGET}"
 echo -e "${BLUE}====================================================${RESET}"
