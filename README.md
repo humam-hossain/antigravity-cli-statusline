@@ -62,9 +62,9 @@ To enable it, simply append `--classic` (or `--no-nerdfont` / `--compatibility`)
 Choose the installation command for your operating system:
 
 ### 🐧 macOS / Linux
-Run this one-liner to clone the repository to a temporary directory, run the installer, and automatically clean up the temporary folder:
+Run this one-liner to clone the repository to a temporary directory, ensure the installer is executable, run the installer, and automatically clean up the temporary folder:
 ```bash
-git clone https://github.com/weby-homelab/antigravity-cli-statusline.git /tmp/antigravity-cli-statusline && /tmp/antigravity-cli-statusline/install.sh && rm -rf /tmp/antigravity-cli-statusline
+git clone https://github.com/weby-homelab/antigravity-cli-statusline.git /tmp/antigravity-cli-statusline && chmod +x /tmp/antigravity-cli-statusline/install.sh && /tmp/antigravity-cli-statusline/install.sh && rm -rf /tmp/antigravity-cli-statusline
 ```
 
 **Manual Installation:**
@@ -72,9 +72,10 @@ git clone https://github.com/weby-homelab/antigravity-cli-statusline.git /tmp/an
    ```bash
    git clone https://github.com/weby-homelab/antigravity-cli-statusline.git
    ```
-2. Navigate to the directory and run the installer:
+2. Navigate to the directory, make the installer executable, and run it:
    ```bash
    cd antigravity-cli-statusline
+   chmod +x install.sh
    ./install.sh
    ```
 
