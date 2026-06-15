@@ -115,9 +115,22 @@ Powershell -NoProfile -ExecutionPolicy Bypass -File $HOME\.antigravity\uninstall
 
 ---
 
-## ⚙️ Configuration Details
-The installation script updates your `settings.json` (located at `~/.gemini/antigravity-cli/settings.json`) to register the statusline hook:
+## ⚙️ Configuration & File Structure
 
+Here is the file structure installed by the automated setup scripts on each platform, along with their related configuration paths.
+
+### 🐧 macOS / Linux File Structure
+```text
+~ (User Home)
+├── .antigravity/                   # Installation folder
+│   ├── statusline.sh               # Statusline logic script
+│   └── uninstall.sh                # Uninstallation helper script
+└── .gemini/
+    └── antigravity-cli/
+        └── settings.json           # Antigravity CLI configuration
+```
+
+Your `~/.gemini/antigravity-cli/settings.json` will be configured as follows:
 ```json
 {
   "statusLine": {
@@ -128,7 +141,36 @@ The installation script updates your `settings.json` (located at `~/.gemini/anti
 }
 ```
 
-On Windows, the command will be registered to run via PowerShell with execution policy bypass flags.
+### 🪟 Windows File Structure
+```text
+C:\Users\<username> (User Profile)
+├── .antigravity\                   # Installation folder
+│   ├── statusline.ps1              # Statusline PowerShell script
+│   └── uninstall.ps1               # Uninstallation helper script
+└── .gemini\
+    └── antigravity-cli\
+        └── settings.json           # Antigravity CLI configuration
+```
+
+Your `%USERPROFILE%\.gemini\antigravity-cli\settings.json` will be configured as follows:
+```json
+{
+  "statusLine": {
+    "type": "",
+    "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"C:/Users/user/.antigravity/statusline.ps1\"",
+    "enabled": true
+  }
+}
+```
+
+---
+
+## 📝 Important Notes & Release History
+
+### 🚀 Release v0.1.2 (June 15, 2026)
+- **Classic Compatibility Mode**: Added support for terminals without Nerd Fonts (e.g. ChromeOS Terminal, Emacs, legacy TTYs). You can activate it by adding `--classic`, `--no-nerdfont`, or `--compatibility` arguments to the `command` field in your `settings.json`.
+- **Robust Quota Detection & Auto-Hide**: Fixed issues where model quotas failed to show or displayed empty progress bars when using custom/third-party model names. The script now dynamically selects the first active quota and hides the quota block completely if no quota limits are available (`-1` or null).
+- **PowerShell Compatibility**: Ported all classic-mode and quota detection enhancements to Windows (`statusline.ps1`).
 
 ---
 
