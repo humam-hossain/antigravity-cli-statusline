@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 2. Language Switcher
+  // 2. Language Switcher (Safe wrapped in try-catch)
   const langBtns = document.querySelectorAll('.lang-btn');
   
   function setLanguage(lang) {
@@ -26,15 +26,25 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     
-    localStorage.setItem('preferred-lang', lang);
+    try {
+      localStorage.setItem('preferred-lang', lang);
+    } catch (e) {
+      console.warn('localStorage is disabled or restricted:', e);
+    }
     
     // Update document title and description dynamically
     if (lang === 'ua') {
       document.title = "Antigravity CLI Statusline (Max Edition) — Weby Homelab";
-      document.querySelector('meta[name="description"]').setAttribute('content', "Сучасна, розумна та адаптивна панель стану для Antigravity CLI (agy). Відображає Git статус, квоти LLM, токени та стан сендбоксу в терміналі.");
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute('content', "Сучасна, розумна та адаптивна панель стану для Antigravity CLI (agy). Відображає Git статус, квоти LLM, токени та стан сендбоксу в терміналі.");
+      }
     } else {
       document.title = "Antigravity CLI Statusline (Max Edition) — Weby Homelab";
-      document.querySelector('meta[name="description"]').setAttribute('content', "An advanced, responsive, and high-information statusline plugin for the Antigravity CLI (agy). Features multi-layout adapting to your terminal width.");
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute('content', "An advanced, responsive, and high-information statusline plugin for the Antigravity CLI (agy). Features multi-layout adapting to your terminal width.");
+      }
     }
   }
   
@@ -45,8 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
-  // Set default language (EN by default)
-  const savedLang = localStorage.getItem('preferred-lang') || 'en';
+  // Set default language (EN by default, safe loaded)
+  let savedLang = 'en';
+  try {
+    savedLang = localStorage.getItem('preferred-lang') || 'en';
+  } catch (e) {
+    console.warn('localStorage is disabled or restricted:', e);
+  }
   setLanguage(savedLang);
 
   // 3. Copy to Clipboard Functionality
@@ -105,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 6. Interactive Terminal Statusline Preview (Contemporary info June 2026)
+  // 6. Interactive Terminal Statusline Preview (Updated to Gemini 3.5 Flash for June 2026)
   const previewElement = document.getElementById('statusline-interactive-preview');
   const widthBtns = document.querySelectorAll('.width-btn');
   const fontBtns = document.querySelectorAll('.font-btn');
@@ -113,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentWidth = 'wide'; // wide, medium, small
   let currentFont = 'nerd'; // nerd, classic
 
-  // Statusline variations data (Updated to include contemporary June 2026 specs)
+  // Statusline variations data (Updated to include contemporary June 2026 specs - Gemini 3.5 Flash)
   const statuslineData = {
     nerd: {
       wide: `
@@ -121,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="statusline-cell">
             <span class="status-badge net-on">󰖩 ON (net)</span>
             <span class="status-badge git-branch"> main*</span>
-            <span class="status-badge model">󰚏 gemini-1.5-pro</span>
+            <span class="status-badge model">󰚏 gemini-3.5-flash</span>
           </div>
           <div class="statusline-cell">
             <div class="statusline-progress-wrapper">
@@ -138,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="statusline-cell">
             <span class="status-badge net-on">󰖩 ON (net)</span>
             <span class="status-badge git-branch"> main*</span>
-            <span class="status-badge model">󰚏 gemini-1.5-pro</span>
+            <span class="status-badge model">󰚏 gemini-3.5-flash</span>
           </div>
           <div class="statusline-cell">
             <span class="status-badge" style="background: rgba(255,255,255,0.03);">󱙺 2 subagents  1 task</span>
@@ -175,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="statusline-cell">
             <span class="status-badge net-on">[NET_ON]</span>
             <span class="status-badge git-branch">br: main*</span>
-            <span class="status-badge model">mod: gemini-1.5-pro</span>
+            <span class="status-badge model">mod: gemini-3.5-flash</span>
           </div>
           <div class="statusline-cell">
             <div class="statusline-progress-wrapper">
@@ -192,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="statusline-cell">
             <span class="status-badge net-on">[NET_ON]</span>
             <span class="status-badge git-branch">br: main*</span>
-            <span class="status-badge model">mod: gemini-1.5-pro</span>
+            <span class="status-badge model">mod: gemini-3.5-flash</span>
           </div>
           <div class="statusline-cell">
             <span class="status-badge" style="background: rgba(255,255,255,0.03);">subs: 2 tasks: 1</span>
@@ -210,12 +225,12 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
       `,
-      // Classic + Small shows the exact multi-line list matching the user request
+      // Classic + Small shows the exact multi-line list matching the user request with Gemini 3.5 Flash
       small: `
         <div style="line-height: 1.5; font-family: var(--font-mono); font-size: 0.85rem; padding: 4px 0;">
           <div style="color: #10b981;">[NET_ON]</div>
           <div style="color: #6366f1;">br: main*</div>
-          <div style="color: #06b6d4; font-style: italic;">mod: gemini-1.5-pro</div>
+          <div style="color: #06b6d4; font-style: italic;">mod: gemini-3.5-flash</div>
           <div style="color: #f59e0b;">CTX [**********..........] 50%</div>
           <div style="color: #f8fafc;">tok: 120.4K/1.0M</div>
           <div style="color: #10b981;">q-5h: 90%</div>
@@ -226,8 +241,10 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   function updateStatusline() {
-    previewElement.className = `statusline-preview ${currentWidth}`;
-    previewElement.innerHTML = statuslineData[currentFont][currentWidth];
+    if (previewElement) {
+      previewElement.className = `statusline-preview ${currentWidth}`;
+      previewElement.innerHTML = statuslineData[currentFont][currentWidth];
+    }
   }
 
   widthBtns.forEach(btn => {
