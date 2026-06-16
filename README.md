@@ -1,6 +1,6 @@
 # 🚀 Antigravity CLI Statusline (Max Edition)
 
-An advanced, responsive, and high-information statusline plugin for the **Antigravity CLI** (`agy`). It features multi-layout adapting to your terminal width, real-time Git status tracking, token counting, active model quotas, and sandbox badges.
+An advanced, responsive, and high-information statusline plugin for the **[Antigravity CLI (Community Fork)](https://github.com/weby-homelab/antigravity-cli)** (`agy`). It features multi-layout adapting to your terminal width, real-time Git status tracking, token counting, active model quotas, and sandbox badges.
 
 ---
 
@@ -65,6 +65,9 @@ To enable it, simply append `--classic` (or `--no-nerdfont` / `--compatibility`)
 ---
 
 ## 📥 Installation
+
+> [!NOTE]
+> This statusline is already configured and enabled by default when you install the community-hardened **[Antigravity CLI](https://github.com/weby-homelab/antigravity-cli)**. Use this manual installation only if you are using the upstream CLI version or want to reinstall it separately.
 
 > [!WARNING]
 > Do **NOT** run the installation commands with `sudo`. The statusline installs locally in your home directory (`~/.antigravity` and `~/.gemini/`). Running with `sudo` will cause file permission issues for your user account.
