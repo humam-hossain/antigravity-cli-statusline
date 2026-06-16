@@ -992,3 +992,49 @@ footer {
     text-align: center;
   }
 }
+
+/* Language switcher and visibility toggles */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 12px;
+}
+
+.lang-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 6px;
+  transition: var(--transition-fast);
+  border-radius: 4px;
+}
+
+.lang-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.lang-btn.active {
+  color: var(--primary);
+  text-shadow: 0 0 8px var(--primary-glow);
+}
+
+.lang-separator {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  opacity: 0.5;
+}
+
+/* Body language visibility filters */
+body.lang-en .lang-ua {
+  display: none !important;
+}
+
+body.lang-ua .lang-en {
+  display: none !important;
+}
+

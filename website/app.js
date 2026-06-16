@@ -11,7 +11,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 2. Copy to Clipboard Functionality
+  // 2. Language Switcher
+  const langBtns = document.querySelectorAll('.lang-btn');
+  
+  function setLanguage(lang) {
+    document.body.className = document.body.className.replace(/\blang-\w+\b/g, '');
+    document.body.classList.add(`lang-${lang}`);
+    
+    langBtns.forEach(btn => {
+      if (btn.getAttribute('data-lang') === lang) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    
+    localStorage.setItem('preferred-lang', lang);
+    
+    // Update document title and description dynamically
+    if (lang === 'ua') {
+      document.title = "Antigravity CLI Statusline (Max Edition) — Weby Homelab";
+      document.querySelector('meta[name="description"]').setAttribute('content', "Сучасна, розумна та адаптивна панель стану для Antigravity CLI (agy). Відображає Git статус, квоти LLM, токени та стан сендбоксу в терміналі.");
+    } else {
+      document.title = "Antigravity CLI Statusline (Max Edition) — Weby Homelab";
+      document.querySelector('meta[name="description"]').setAttribute('content', "An advanced, responsive, and high-information statusline plugin for the Antigravity CLI (agy). Features multi-layout adapting to your terminal width.");
+    }
+  }
+  
+  langBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.getAttribute('data-lang');
+      setLanguage(lang);
+    });
+  });
+  
+  // Set default language (EN by default)
+  const savedLang = localStorage.getItem('preferred-lang') || 'en';
+  setLanguage(savedLang);
+
+  // 3. Copy to Clipboard Functionality
   const copyButtons = document.querySelectorAll('.copy-btn');
   copyButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -37,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 3. Showcase Layout Tabs Toggle
+  // 4. Showcase Layout Tabs Toggle
   const layoutTabBtns = document.querySelectorAll('.layout-tab-btn');
   const layoutImgs = document.querySelectorAll('.layout-img');
   
@@ -52,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 4. Installation OS Tabs
+  // 5. Installation OS Tabs
   const installTabBtns = document.querySelectorAll('.install-tab-btn');
   const installPanes = document.querySelectorAll('.install-pane');
   
@@ -67,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 5. Interactive Terminal Statusline Preview
+  // 6. Interactive Terminal Statusline Preview (Contemporary info June 2026)
   const previewElement = document.getElementById('statusline-interactive-preview');
   const widthBtns = document.querySelectorAll('.width-btn');
   const fontBtns = document.querySelectorAll('.font-btn');
@@ -75,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentWidth = 'wide'; // wide, medium, small
   let currentFont = 'nerd'; // nerd, classic
 
-  // Statusline variations data
+  // Statusline variations data (Updated to include contemporary June 2026 specs)
   const statuslineData = {
     nerd: {
       wide: `
@@ -172,23 +210,22 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
       `,
+      // Classic + Small shows the exact multi-line list matching the user request
       small: `
-        <div class="statusline-row">
-          <div class="statusline-cell">
-            <span class="status-badge net-on">[NET]</span>
-            <span class="status-badge git-branch">main*</span>
-            <span class="status-badge error">q-5h: 90%</span>
-          </div>
-          <div class="statusline-cell">
-            <span class="status-badge" style="background: rgba(255,255,255,0.03);">S: 2 T: 1</span>
-          </div>
+        <div style="line-height: 1.5; font-family: var(--font-mono); font-size: 0.85rem; padding: 4px 0;">
+          <div style="color: #10b981;">[NET_ON]</div>
+          <div style="color: #6366f1;">br: main*</div>
+          <div style="color: #06b6d4; font-style: italic;">mod: gemini-1.5-pro</div>
+          <div style="color: #f59e0b;">CTX [**********..........] 50%</div>
+          <div style="color: #f8fafc;">tok: 120.4K/1.0M</div>
+          <div style="color: #10b981;">q-5h: 90%</div>
+          <div style="color: #94a3b8;">subs: 2 tasks: 1</div>
         </div>
       `
     }
   };
 
   function updateStatusline() {
-    // Add visual changes to preview element
     previewElement.className = `statusline-preview ${currentWidth}`;
     previewElement.innerHTML = statuslineData[currentFont][currentWidth];
   }
