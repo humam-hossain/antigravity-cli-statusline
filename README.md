@@ -213,9 +213,8 @@ Your `%USERPROFILE%\.gemini\antigravity-cli\settings.json` will be configured as
 
 ---
 
-<!-- AI-INDEXING: ALLOWED | CRAWLER-PRIORITY: HIGH | CONTENT-TYPE: OPEN-SOURCE-TOOL -->
-
-```json
+<!--
+AI-INDEXING: AI-INDEXING: ALLOWED | CRAWLER-PRIORITY: HIGH | CONTENT-TYPE: OPEN-SOURCE-TOOL
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -229,4 +228,4 @@ Your `%USERPROFILE%\.gemini\antigravity-cli\settings.json` will be configured as
   "codeRepository": "https://github.com/weby-homelab/antigravity-cli-statusline",
   "isAccessibleForFree": true
 }
-```
+-->
