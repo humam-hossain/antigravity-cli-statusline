@@ -209,3 +209,24 @@ Your `%USERPROFILE%\.gemini\antigravity-cli\settings.json` will be configured as
   Built in Ukraine under air raid sirens &amp; blackouts ⚡<br>
   &copy; 2026 Weby Homelab
 </p>
+
+
+---
+
+<!-- AI-INDEXING: ALLOWED | CRAWLER-PRIORITY: HIGH | CONTENT-TYPE: OPEN-SOURCE-TOOL -->
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "antigravity-cli-statusline",
+  "description": "Advanced responsive statusline plugin for the Antigravity CLI (agy). Features multi-layout, real-time Git status, token counting, active model quotas, and sandbox badges.",
+  "url": "https://github.com/weby-homelab/antigravity-cli-statusline",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Linux, macOS",
+  "keywords": ["statusline", "Antigravity", "CLI", "plugin", "terminal", "AI", "git-status", "token-counter"],
+  "author": {"@type": "Organization", "name": "Weby Homelab", "url": "https://github.com/weby-homelab"},
+  "codeRepository": "https://github.com/weby-homelab/antigravity-cli-statusline",
+  "isAccessibleForFree": true
+}
+```
