@@ -653,7 +653,9 @@ BG_FMT=$(make_badge "${ICON_TASKS}" "${BG_TASKS}" "135")
 SYS_FMT=""
 if [ -n "$MEM_PCT" ] && [ -n "$LOAD_1M" ]; then
   sys_color="76"
-  if [ "$MEM_PCT" -ge 80 ] 2>/dev/null || (( $(echo "$LOAD_1M > 8.0" | bc -l 2>/dev/null || echo 0) )); then
+  load_int=${LOAD_1M%.*}
+  load_int=${load_int:-0}
+  if [ "$MEM_PCT" -ge 80 ] 2>/dev/null || [ "$load_int" -ge 8 ] 2>/dev/null; then
     sys_color="197"
   elif [ "$MEM_PCT" -ge 65 ] 2>/dev/null; then
     sys_color="214"

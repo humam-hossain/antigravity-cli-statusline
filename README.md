@@ -256,6 +256,10 @@ Your `%USERPROFILE%\.gemini\antigravity-cli\settings.json` will be configured as
 
 ## 📝 Important Notes & Release History
 
+### 🚀 Release v0.1.6 (July 9, 2026)
+- **Subprocess-Free Load Average**: Replaced `bc` shell calls in `statusline.sh` with pure Bash decimal stripping to improve rendering performance and remove external package dependency.
+- **Windows Git Timeout Resilience**: Ported the Git timeout safeguard to `statusline.ps1` using a .NET-native Process wrapper with a 1-sec limit to prevent PowerShell hangs on slow remote filesystems.
+
 ### 🚀 Release v0.1.5 (July 9, 2026)
 - **Responsive 2-Line Layout**: Configured a space-efficient 2-line layout when the terminal window is scaled between 140 and 179 characters wide.
 - **Optimized Tokens Display**: Split token usage formatting into wide and medium versions to prevent terminal output wrapping on compact displays.

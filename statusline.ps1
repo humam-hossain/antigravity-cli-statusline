@@ -127,14 +127,44 @@ $FG_BRIGHT_WHITE = "$ESC[97m"
 $NUM_COLOR = "${FG_BRIGHT_WHITE}${B}"
 $DOT = "${FG_GRAY} | ${R}"
 
+# Timeout Process Helper
+function Run-WithTimeout {
+    param(
+        [string]$Command,
+        [string[]]$Arguments,
+        [int]$TimeoutMs = 1000
+    )
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $Command
+    $psi.Arguments = $Arguments -join " "
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.UseShellExecute = $false
+    $psi.CreateNoWindow = $true
+
+    $proc = New-Object System.Diagnostics.Process
+    $proc.StartInfo = $psi
+
+    try {
+        if ($proc.Start()) {
+            if ($proc.WaitForExit($TimeoutMs)) {
+                return $proc.StandardOutput.ReadToEnd()
+            } else {
+                $proc.Kill()
+            }
+        }
+    } catch {}
+    return $null
+}
+
 # VCS directly from git (Bypasses JSON caches)
 $GIT_DIR = if ($CWD) { $CWD } else { "." }
 if (Test-Path "$GIT_DIR") {
-    $gitBranch = git -C "$GIT_DIR" rev-parse --abbrev-ref HEAD 2>$null
+    $gitBranch = Run-WithTimeout -Command "git" -Arguments @("-C", "`"$GIT_DIR`"", "rev-parse", "--abbrev-ref", "HEAD")
     if ($gitBranch) {
         $VCS_BRANCH = $gitBranch.Trim()
         $VCS_TYPE = "git"
-        $status = git -C "$GIT_DIR" status --porcelain 2>$null
+        $status = Run-WithTimeout -Command "git" -Arguments @("-C", "`"$GIT_DIR`"", "status", "--porcelain")
         if ($status) {
             $VCS_DIRTY = $true
         } else {
