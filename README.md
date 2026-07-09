@@ -10,11 +10,14 @@ An advanced, responsive, and high-information statusline plugin for the **[Antig
 The ultimate high-information layout displaying all telemetry fields: system metrics, Git status, active subagents, background tasks, model quotas, and power/battery state in a single aligned row.
 ![Ultra Layout](screenshots/Antigravity-cli-statusline-ULTRA-2.png)
 
-### 📱 Medium Layout (Terminal width 130 to 179 chars)
-Stacks status and telemetry into a clean 3-line layout to prevent command output wrapping on standard terminals.
+### ⚡ Medium-Wide / Two-Line Layout (Terminal width 140 to 179 chars)
+Encloses the statusline powerline segments and all telemetry badges into a space-efficient, beautifully boxed 2-line layout.
+
+### 📱 Medium Layout (Terminal width 100 to 139 chars)
+Stacks status segments and telemetry badges into a clean 3-line layout to prevent command output wrapping on standard terminals.
 ![Medium Layout](screenshots/Antigravity-cli-statusline-MEDIUM-2.png)
 
-### 📟 Small / Compact Layout (Terminal width < 130 chars)
+### 📟 Small / Compact Layout (Terminal width < 100 chars)
 Ensures all metrics (READY, model, CWD, tokens, resources, and power) fit perfectly in a stacked 4-line layout on narrower terminals.
 ![Compact Layout](screenshots/Antigravity-cli-statusline-SMALL-2.png)
 
@@ -249,6 +252,10 @@ Your `%USERPROFILE%\.gemini\antigravity-cli\settings.json` will be configured as
 ---
 
 ## 📝 Important Notes & Release History
+
+### 🚀 Release v0.1.5 (July 9, 2026)
+- **Responsive 2-Line Layout**: Configured a space-efficient 2-line layout when the terminal window is scaled between 140 and 179 characters wide.
+- **Optimized Tokens Display**: Split token usage formatting into wide and medium versions to prevent terminal output wrapping on compact displays.
 
 ### 🚀 Release v0.1.4 (July 8, 2026)
 - **Git Timeout Resilience**: Added a 1-second timeout wrapper around all Git calls to prevent terminal statusline hangs on slow, unreachable network mounts (NFS, Samba) or extremely large repositories.

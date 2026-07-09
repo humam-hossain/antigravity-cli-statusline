@@ -120,8 +120,9 @@ for arg in "$@"; do
       echo -e ""
       echo -e "${B}LAYOUTS:${R}"
       echo -e "  - ${B}Wide Layout (>= 180 chars):${R} Single-row powerline segment dashboard."
-      echo -e "  - ${B}Medium Layout (>= 90 chars):${R} Double-line boxed telemetry block."
-      echo -e "  - ${B}Small Layout (< 90 chars):${R} Minimalist indicator for status, model & resources."
+      echo -e "  - ${B}Medium-Wide Layout (140-179 chars):${R} Double-line boxed telemetry block."
+      echo -e "  - ${B}Medium Layout (100-139 chars):${R} Triple-line boxed telemetry block."
+      echo -e "  - ${B}Small Layout (< 100 chars):${R} Quad-line stacked telemetry dashboard."
       echo -e ""
       echo -e "${B}COMPONENTS & ICONS:${R}"
       echo -e "  ${B}Field                Nerd Font   Classic     Description${R}"
@@ -693,16 +694,19 @@ if [ -n "$AC_ONLINE_PATH" ]; then
 fi
 
 # Token counters
-TOK_DETAILS=""
+TOK_DETAILS_WIDE=""
+TOK_DETAILS_MED=""
 if [ "$CTX_USED" -gt 0 ] 2>/dev/null; then
   turn_str=""
   if [ "$TURN_INPUT_TOKENS" -gt 0 ] || [ "$TURN_OUTPUT_TOKENS" -gt 0 ]; then
     turn_str=" | turn: +${TURN_INPUT_FMT}/${TURN_OUTPUT_FMT}"
   fi
   if [ "$USE_CLASSIC_ICONS" = "true" ]; then
-    TOK_DETAILS=" (${CTX_USED_FMT}/${CTX_LIMIT_FMT})${DOT_L2}(total: ${INPUT_TOK_FMT}/${OUTPUT_TOK_FMT}${turn_str})"
+    TOK_DETAILS_WIDE=" (${CTX_USED_FMT}/${CTX_LIMIT_FMT})${DOT_L2}(total: ${INPUT_TOK_FMT}/${OUTPUT_TOK_FMT}${turn_str})"
+    TOK_DETAILS_MED=" (${CTX_USED_FMT}/${CTX_LIMIT_FMT})"
   else
-    TOK_DETAILS=" (${CTX_USED_FMT}/${CTX_LIMIT_FMT})${DOT_L2}${FG_YELLOW}${ICON_TOK_SUM} ${R} (total: ${INPUT_TOK_FMT}/${OUTPUT_TOK_FMT}${turn_str})"
+    TOK_DETAILS_WIDE=" (${CTX_USED_FMT}/${CTX_LIMIT_FMT})${DOT_L2}${FG_YELLOW}${ICON_TOK_SUM} ${R} (total: ${INPUT_TOK_FMT}/${OUTPUT_TOK_FMT}${turn_str})"
+    TOK_DETAILS_MED=" (${CTX_USED_FMT}/${CTX_LIMIT_FMT})"
   fi
 fi
 
@@ -831,15 +835,29 @@ if [ "$COLS" -ge 180 ]; then
   # Wide Layout: single row, left segment block and right pill dashboard
   LINE2=""
   if [ -n "$SYS_FMT" ]; then LINE2="${SYS_FMT}${sep}"; fi
-  LINE2="${LINE2}${ART_FMT}${sep}${SUB_FMT}${sep}${BG_FMT}${sep}${SB_FMT}${sep}${CTX_BAR}${TOK_DETAILS}"
+  LINE2="${LINE2}${ART_FMT}${sep}${SUB_FMT}${sep}${BG_FMT}${sep}${SB_FMT}${sep}${CTX_BAR}${TOK_DETAILS_WIDE}"
   if [ -n "$QUOTA_FMT" ]; then LINE2="${LINE2} ${QUOTA_FMT}"; fi
   if [ -n "$POWER_FMT" ]; then LINE2="${LINE2}${sep}${POWER_FMT}"; fi
   
   print_right_aligned "$LINE1" "$LINE2" "$COLS"
 
-elif [ "$COLS" -ge 130 ]; then
+elif [ "$COLS" -ge 140 ]; then
+  # Medium-Wide Layout: 2-line boxed display
+  LINE2="${CTX_BAR}${TOK_DETAILS_MED}"
+  for badge in "$SYS_FMT" "$ART_FMT" "$SUB_FMT" "$BG_FMT" "$SB_FMT"; do
+    if [ -n "$badge" ]; then
+      LINE2="${LINE2}${sep}${badge}"
+    fi
+  done
+  if [ -n "$QUOTA_FMT" ]; then LINE2="${LINE2}${sep}${QUOTA_FMT}"; fi
+  if [ -n "$POWER_FMT" ]; then LINE2="${LINE2}${sep}${POWER_FMT}"; fi
+  
+  echo -e "${line_pref1}${LINE1}"
+  echo -e "${line_pref4}${LINE2}"
+
+elif [ "$COLS" -ge 100 ]; then
   # Medium Layout: 3-row display to avoid wrapping
-  LINE2="${CTX_BAR}${TOK_DETAILS}"
+  LINE2="${CTX_BAR}${TOK_DETAILS_MED}"
   for badge in "$SYS_FMT" "$ART_FMT" "$SUB_FMT" "$BG_FMT" "$SB_FMT"; do
     if [ -n "$badge" ]; then
       LINE2="${LINE2}${sep}${badge}"
@@ -863,8 +881,8 @@ elif [ "$COLS" -ge 130 ]; then
   fi
 
 else
-  # Compact Layout: 4-row display ensuring all blocks are visible and fit perfectly
-  LINE2="${CTX_BAR}${TOK_DETAILS}"
+  # Compact Layout: 4-row display ensuring all blocks fit perfectly
+  LINE2="${CTX_BAR}${TOK_DETAILS_MED}"
   
   LINE3=""
   for badge in "$SYS_FMT" "$ART_FMT" "$SUB_FMT" "$BG_FMT" "$SB_FMT"; do
