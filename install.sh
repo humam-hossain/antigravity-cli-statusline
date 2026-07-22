@@ -59,30 +59,34 @@ RAW_URL="https://raw.githubusercontent.com/weby-homelab/antigravity-cli-statusli
 
 if [ -n "$LOCAL_DIR" ]; then
   echo -e "Installing from local files..."
-  cp "${LOCAL_DIR}/statusline.sh" "$SCRIPT_TARGET"
-  chmod +x "$SCRIPT_TARGET"
+  cp "${LOCAL_DIR}/statusline.sh" "${SCRIPT_TARGET}.tmp"
+  chmod +x "${SCRIPT_TARGET}.tmp"
+  mv -f "${SCRIPT_TARGET}.tmp" "$SCRIPT_TARGET"
   if [ -f "${LOCAL_DIR}/uninstall.sh" ]; then
-    cp "${LOCAL_DIR}/uninstall.sh" "$UNINSTALL_TARGET"
-    chmod +x "$UNINSTALL_TARGET"
+    cp "${LOCAL_DIR}/uninstall.sh" "${UNINSTALL_TARGET}.tmp"
+    chmod +x "${UNINSTALL_TARGET}.tmp"
+    mv -f "${UNINSTALL_TARGET}.tmp" "$UNINSTALL_TARGET"
   fi
 else
   echo -e "Installing from remote repository..."
   if command -v curl &> /dev/null; then
     echo -e "Downloading statusline.sh using curl..."
-    curl -fsSL "${RAW_URL}/statusline.sh" -o "$SCRIPT_TARGET"
+    curl -fsSL "${RAW_URL}/statusline.sh" -o "${SCRIPT_TARGET}.tmp"
     echo -e "Downloading uninstall.sh using curl..."
-    curl -fsSL "${RAW_URL}/uninstall.sh" -o "$UNINSTALL_TARGET"
+    curl -fsSL "${RAW_URL}/uninstall.sh" -o "${UNINSTALL_TARGET}.tmp"
   elif command -v wget &> /dev/null; then
     echo -e "Downloading statusline.sh using wget..."
-    wget -qO "$SCRIPT_TARGET" "${RAW_URL}/statusline.sh"
+    wget -qO "${SCRIPT_TARGET}.tmp" "${RAW_URL}/statusline.sh"
     echo -e "Downloading uninstall.sh using wget..."
-    wget -qO "$UNINSTALL_TARGET" "${RAW_URL}/uninstall.sh"
+    wget -qO "${UNINSTALL_TARGET}.tmp" "${RAW_URL}/uninstall.sh"
   else
     echo -e "${RED}Error: Neither curl nor wget is installed. Cannot download files.${RESET}"
     exit 1
   fi
-  chmod +x "$SCRIPT_TARGET"
-  chmod +x "$UNINSTALL_TARGET"
+  chmod +x "${SCRIPT_TARGET}.tmp"
+  chmod +x "${UNINSTALL_TARGET}.tmp"
+  mv -f "${SCRIPT_TARGET}.tmp" "$SCRIPT_TARGET"
+  mv -f "${UNINSTALL_TARGET}.tmp" "$UNINSTALL_TARGET"
 fi
 
 # 4. Configure settings.json
