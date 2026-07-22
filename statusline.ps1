@@ -610,35 +610,63 @@ function print_right_aligned($left, $right, $total_cols) {
     return "${left}${spaces}${right}"
 }
 
-# Output Assembly based on Column Width
-if ($COLS -ge 180) {
-    $LINE1 = "${S}${CLI_VER_FMT}${USER_FMT}${HOST_FMT}${M}${DIR_FMT}${V}${CONV_FMT}"
-    if ($QUOTA_FMT) {
-        $LINE2 = "${ART_FMT}${DOT_L2}${SUB_FMT}${DOT_L2}${BG_FMT}${DOT_L2}${SB}${DOT_L2}${CTX_BAR}${TOK_DETAILS_WIDE}${QUOTA_FMT}${POWER_FMT}"
-    } else {
-        $LINE2 = "${ART_FMT}${DOT_L2}${SUB_FMT}${DOT_L2}${BG_FMT}${DOT_L2}${SB}${DOT_L2}${CTX_BAR}${TOK_DETAILS_WIDE}${POWER_FMT}"
+# Smart Dynamic Line-Packing Engine
+$BADGE_LIST = @()
+if ($CTX_BAR) { $BADGE_LIST += $CTX_BAR }
+if ($CTX_USED -gt 0) {
+    $turn_str = ""
+    if ($TURN_INPUT_TOKENS -gt 0 -or $TURN_OUTPUT_TOKENS -gt 0) {
+        $turn_str = " | turn: +${TURN_INPUT_FMT}/${TURN_OUTPUT_FMT}"
     }
-    print_right_aligned $LINE1 $LINE2 $COLS
-} elseif ($COLS -ge 90) {
-    $LINE1 = "${S}${CLI_VER_FMT}${USER_FMT}${HOST_FMT}${M}${DIR_FMT}${V}"
-    if ($QUOTA_FMT) {
-        $LINE2 = " ${CTX_BAR}${TOK_DETAILS_MED}${DOT_L2}${ART_FMT}${DOT_L2}${SUB_FMT}${DOT_L2}${BG_FMT}${DOT_L2}${SB}${QUOTA_FMT}${POWER_FMT}"
+    if ($USE_CLASSIC_ICONS) {
+        $BADGE_LIST += "(total: ${INPUT_TOK_FMT}/${OUTPUT_TOK_FMT}${turn_str})"
     } else {
-        $LINE2 = " ${CTX_BAR}${TOK_DETAILS_MED}${DOT_L2}${ART_FMT}${DOT_L2}${SUB_FMT}${DOT_L2}${BG_FMT}${DOT_L2}${SB}${POWER_FMT}"
+        $BADGE_LIST += (make_badge $ICON_TOK_SUM "total: ${INPUT_TOK_FMT}/${OUTPUT_TOK_FMT}${turn_str}" "220")
     }
-    "${FG_GRAY}╭─${R}${LINE1}`n${FG_GRAY}╰─${R}${LINE2}"
+}
+if ($SYS_FMT) { $BADGE_LIST += $SYS_FMT }
+if ($ART_FMT) { $BADGE_LIST += $ART_FMT }
+if ($SUB_FMT) { $BADGE_LIST += $SUB_FMT }
+if ($BG_FMT) { $BADGE_LIST += $BG_FMT }
+if ($SB_FMT) { $BADGE_LIST += $SB_FMT }
+if ($Q_5H -ne $null -and $Q_5H -ne -1) { $BADGE_LIST += (make_quota_bar $Q_5H "5H" "37" $Q_5H_R) }
+if ($Q_WK -ne $null -and $Q_WK -ne -1) { $BADGE_LIST += (make_quota_bar $Q_WK "7D" "135" $Q_WK_R) }
+if ($POWER_FMT) { $BADGE_LIST += $POWER_FMT }
+
+$PACKED_LINES = @()
+$curr_line = ""
+$curr_vis = 0
+$max_vis = $COLS - 4
+if ($max_vis -lt 40) { $max_vis = 40 }
+
+foreach ($badge in $BADGE_LIST) {
+    if (-not $badge) { continue }
+    $b_vis = visible_len $badge
+    if (-not $curr_line) {
+        $curr_line = $badge
+        $curr_vis = $b_vis
+    } elseif (($curr_vis + 2 + $b_vis) -le $max_vis) {
+        $curr_line += "  $badge"
+        $curr_vis += 2 + $b_vis
+    } else {
+        $PACKED_LINES += $curr_line
+        $curr_line = $badge
+        $curr_vis = $b_vis
+    }
+}
+if ($curr_line) { $PACKED_LINES += $curr_line }
+
+if ($USE_CLASSIC_ICONS) {
+    $LINE1
+    foreach ($pline in $PACKED_LINES) { $pline }
 } else {
-    $M_SHORT = ""
-    if ($disp) {
-        if ($USE_CLASSIC_ICONS) {
-            $M_SHORT = "${FG_GRAY} ╱ ${FG_BRIGHT_MAGENTA}$($disp.Substring(0, [Math]::Min(12, $disp.Length)))${R}"
+    "${FG_GRAY}╭─${R}${LINE1}"
+    $total_packed = $PACKED_LINES.Count
+    for ($i = 0; $i -lt $total_packed; $i++) {
+        if (($i + 1) -eq $total_packed) {
+            "${FG_GRAY}╰─${R}$($PACKED_LINES[$i])"
         } else {
-            $M_SHORT = "${FG_GRAY} ╱ ${FG_BRIGHT_MAGENTA}${ICON_MODEL} $($disp.Substring(0, [Math]::Min(12, $disp.Length)))${R}"
+            "${FG_GRAY}├─${R}$($PACKED_LINES[$i])"
         }
-    }
-    if ($QUOTA_FMT) {
-        "${S}${M_SHORT}`n${CTX_BAR}${DOT_L2}${BG_FMT}${QUOTA_FMT}${POWER_FMT}"
-    } else {
-        "${S}${M_SHORT}`n${CTX_BAR}${DOT_L2}${BG_FMT}${POWER_FMT}"
     }
 }

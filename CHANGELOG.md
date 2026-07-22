@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-07-22
+### Fixed & Hardened
+- **Smart Dynamic Line-Packing Engine**: Replaced rigid fixed-line layouts with an adaptive, greedy line-packing engine. Telemetry badges dynamically flow into cleanly framed boxed rows (`╭─`, `├─`, `╰─`) according to exact visible character lengths, eliminating line wrapping across ALL terminal widths (from 60 to 250+ cols).
+- **100% Telemetry Visibility**: Ensured zero fields are hidden or clipped regardless of terminal width while maintaining strict box border alignment.
+- **Platform Parity**: Synchronized dynamic line-packing engine across Linux/macOS (`statusline.sh`) and Windows PowerShell (`statusline.ps1`).
+
 ## [0.2.0] - 2026-07-22
 ### Added
 - **Maximized Telemetry Dashboard**: Restored and expanded full telemetry fields across all layouts, including User Plan Tier (`PLAN_TIER`), Account Email (`USER_EMAIL`), and turn-by-turn token delta counters (`turn: +IN/OUT`).

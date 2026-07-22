@@ -969,103 +969,91 @@ for ((i = 0; i < num_segs; i++)); do
   LINE1="${LINE1}$(make_segment "${ACTIVE_BGS[i]}" "${ACTIVE_FGS[i]}" "${ACTIVE_SEGS[i]}" "$next_bg")"
 done
 
-# ─── Output Assembly based on terminal size ──────────────────────────────────
-# Configure separators and line prefixes
-sep="  "
-line_pref1=""
-line_pref2=""
-line_pref3=""
-line_pref4=""
+# ─── Smart Dynamic Line-Packing Engine ───────────────────────────────────────
+# Collect all active telemetry badges into an ordered array
+BADGE_LIST=()
 
-if [ "$USE_CLASSIC_ICONS" = "true" ]; then
-  sep=" | "
-else
-  line_pref1="${FG_GRAY}╭─${R}"
-  line_pref2="${FG_GRAY}├─${R}"
-  line_pref3="${FG_GRAY}├─${R}"
-  line_pref4="${FG_GRAY}╰─${R}"
+# 1. Context Usage Bar
+[ -n "$CTX_BAR" ] && BADGE_LIST+=("$CTX_BAR")
+
+# 2. Token Details Badge
+if [ "$CTX_USED" -gt 0 ] 2>/dev/null; then
+  turn_str=""
+  if [ "$TURN_INPUT_TOKENS" -gt 0 ] || [ "$TURN_OUTPUT_TOKENS" -gt 0 ]; then
+    turn_str=" | turn: +${TURN_INPUT_FMT}/${TURN_OUTPUT_FMT}"
+  fi
+  if [ "$USE_CLASSIC_ICONS" = "true" ]; then
+    BADGE_LIST+=("(total: ${INPUT_TOK_FMT}/${OUTPUT_TOK_FMT}${turn_str})")
+  else
+    BADGE_LIST+=("$(make_badge "${ICON_TOK_SUM}" "total: ${INPUT_TOK_FMT}/${OUTPUT_TOK_FMT}${turn_str}" "220")")
+  fi
 fi
 
-if [ "$COLS" -ge 180 ]; then
-  # Wide Layout: single row, left segment block and right pill dashboard
-  LINE2=""
-  if [ -n "$SYS_FMT" ]; then LINE2="${SYS_FMT}${sep}"; fi
-  LINE2="${LINE2}${ART_FMT}${sep}${SUB_FMT}${sep}${BG_FMT}${sep}${SB_FMT}${sep}${CTX_BAR}${TOK_DETAILS_WIDE}"
-  if [ -n "$QUOTA_FMT" ]; then LINE2="${LINE2} ${QUOTA_FMT}"; fi
-  if [ -n "$POWER_FMT" ]; then LINE2="${LINE2}${sep}${POWER_FMT}"; fi
-  
-  print_right_aligned "$LINE1" "$LINE2" "$COLS"
+# 3. System Resources (RAM & Load)
+[ -n "$SYS_FMT" ] && BADGE_LIST+=("$SYS_FMT")
 
-elif [ "$COLS" -ge 140 ]; then
-  # Medium-Wide Layout: 2-line boxed display
-  LINE2="${CTX_BAR}${TOK_DETAILS_WIDE}"
-  for badge in "$SYS_FMT" "$ART_FMT" "$SUB_FMT" "$BG_FMT" "$SB_FMT"; do
-    if [ -n "$badge" ]; then
-      LINE2="${LINE2}${sep}${badge}"
-    fi
-  done
-  if [ -n "$QUOTA_FMT" ]; then LINE2="${LINE2}${sep}${QUOTA_FMT}"; fi
-  if [ -n "$POWER_FMT" ]; then LINE2="${LINE2}${sep}${POWER_FMT}"; fi
-  
-  echo -e "${line_pref1}${LINE1}"
-  echo -e "${line_pref4}${LINE2}"
+# 4. Artifacts Counter
+[ -n "$ART_FMT" ] && BADGE_LIST+=("$ART_FMT")
 
-elif [ "$COLS" -ge 100 ]; then
-  # Medium Layout: 3-row display to avoid wrapping
-  LINE2="${CTX_BAR}${TOK_DETAILS_WIDE}"
-  for badge in "$SYS_FMT" "$ART_FMT" "$SUB_FMT" "$BG_FMT" "$SB_FMT"; do
-    if [ -n "$badge" ]; then
-      LINE2="${LINE2}${sep}${badge}"
-    fi
-  done
+# 5. Subagents Counter
+[ -n "$SUB_FMT" ] && BADGE_LIST+=("$SUB_FMT")
+
+# 6. Background Tasks Counter
+[ -n "$BG_FMT" ] && BADGE_LIST+=("$BG_FMT")
+
+# 7. Sandbox Status
+[ -n "$SB_FMT" ] && BADGE_LIST+=("$SB_FMT")
+
+# 8. Quotas
+if { [ -n "$Q_5H" ] && [ "$Q_5H" != "-1" ]; }; then
+  BADGE_LIST+=("$(make_quota_bar "$Q_5H" "5H" "37" "$Q_5H_R")")
+fi
+if { [ -n "$Q_WK" ] && [ "$Q_WK" != "-1" ]; }; then
+  BADGE_LIST+=("$(make_quota_bar "$Q_WK" "7D" "135" "$Q_WK_R")")
+fi
+
+# 9. Power Status
+[ -n "$POWER_FMT" ] && BADGE_LIST+=("$POWER_FMT")
+
+# Greedy Line-Packing Routine
+PACKED_LINES=()
+curr_line=""
+curr_vis=0
+max_vis=$(( COLS - 4 ))
+if [ "$max_vis" -lt 40 ]; then max_vis=40; fi
+
+for badge in "${BADGE_LIST[@]}"; do
+  [ -z "$badge" ] && continue
+  b_vis=$(visible_len "$badge")
   
-  LINE3=""
-  if [ -n "$QUOTA_FMT" ]; then LINE3="${QUOTA_FMT}"; fi
-  if [ -n "$POWER_FMT" ]; then
-    if [ -n "$LINE3" ]; then
-      LINE3="${LINE3}${sep}${POWER_FMT}"
-    else
-      LINE3="${POWER_FMT}"
-    fi
+  if [ -z "$curr_line" ]; then
+    curr_line="$badge"
+    curr_vis=$b_vis
+  elif [ $(( curr_vis + 2 + b_vis )) -le "$max_vis" ]; then
+    curr_line="${curr_line}  ${badge}"
+    curr_vis=$(( curr_vis + 2 + b_vis ))
+  else
+    PACKED_LINES+=("$curr_line")
+    curr_line="$badge"
+    curr_vis=$b_vis
   fi
-  
-  echo -e "${line_pref1}${LINE1}"
-  echo -e "${line_pref2}${LINE2}"
-  if [ -n "$LINE3" ]; then
-    echo -e "${line_pref4}${LINE3}"
-  fi
+done
+[ -n "$curr_line" ] && PACKED_LINES+=("$curr_line")
 
+# Output rendering with dynamic box borders
+if [ "$USE_CLASSIC_ICONS" = "true" ]; then
+  echo -e "${LINE1}"
+  for pline in "${PACKED_LINES[@]}"; do
+    echo -e "${pline}"
+  done
 else
-  # Compact Layout: 4-row display ensuring all blocks fit perfectly
-  LINE2="${CTX_BAR}${TOK_DETAILS_WIDE}"
-  
-  LINE3=""
-  for badge in "$SYS_FMT" "$ART_FMT" "$SUB_FMT" "$BG_FMT" "$SB_FMT"; do
-    if [ -n "$badge" ]; then
-      if [ -n "$LINE3" ]; then
-        LINE3="${LINE3}${sep}${badge}"
-      else
-        LINE3="${badge}"
-      fi
+  echo -e "${FG_GRAY}╭─${R}${LINE1}"
+  total_packed=${#PACKED_LINES[@]}
+  for ((i = 0; i < total_packed; i++)); do
+    if [ "$((i + 1))" -eq "$total_packed" ]; then
+      echo -e "${FG_GRAY}╰─${R}${PACKED_LINES[i]}"
+    else
+      echo -e "${FG_GRAY}├─${R}${PACKED_LINES[i]}"
     fi
   done
-  
-  LINE4=""
-  if [ -n "$QUOTA_FMT" ]; then LINE4="${QUOTA_FMT}"; fi
-  if [ -n "$POWER_FMT" ]; then
-    if [ -n "$LINE4" ]; then
-      LINE4="${LINE4}${sep}${POWER_FMT}"
-    else
-      LINE4="${POWER_FMT}"
-    fi
-  fi
-  
-  echo -e "${line_pref1}${LINE1}"
-  echo -e "${line_pref2}${LINE2}"
-  if [ -n "$LINE3" ]; then
-    echo -e "${line_pref3}${LINE3}"
-  fi
-  if [ -n "$LINE4" ]; then
-    echo -e "${line_pref4}${LINE4}"
-  fi
 fi
