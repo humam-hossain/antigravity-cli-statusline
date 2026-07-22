@@ -4,6 +4,45 @@
 
 set -euo pipefail
 export LC_NUMERIC=C
+for arg in "$@"; do
+  if [ "$arg" = "--version" ] || [ "$arg" = "-v" ]; then
+    echo "Antigravity CLI Statusline v0.2.2"
+    exit 0
+  fi
+  if [ "$arg" = "--legend" ] || [ "$arg" = "-l" ] || [ "$arg" = "legend" ]; then
+    echo -e "\033[92m\033[1m🚀 Antigravity CLI Maximized Statusline Legend (v0.2.2)\033[0m"
+    echo -e "This statusline adapts dynamically to terminal width and displays high-density system & agent telemetry."
+    echo -e ""
+    echo -e "\033[1mLAYOUTS & AUTO-PACKING:\033[0m"
+    echo -e "  - \033[1mSmart Dynamic Line-Packing Engine:\033[0m Telemetry badges automatically pack into cleanly framed boxed rows (╭─, ├─, ╰─) without line wrapping."
+    echo -e ""
+    echo -e "\033[1mCOMPONENTS & ICONS:\033[0m"
+    echo -e "  \033[1mField                Nerd Font   Classic     Description\033[0m"
+    echo -e "  --------------------------------------------------------------------------------"
+    echo -e "  State: READY                   ●           Agent is idle, ready for user requests."
+    echo -e "  State: THINKING      󰟷          ◆           Agent is processing/thinking."
+    echo -e "  State: WORKING                 ⚙           Agent is executing background operations."
+    echo -e "  State: TOOL                    🔧          Agent is running a tool."
+    echo -e "  VCS Branch                     ╱           Current Git branch name (Red + * if dirty)."
+    echo -e "  Model                          (None)      Current active LLM model name/ID."
+    echo -e "  User Account         👤          (None)      Active user subscription plan and email."
+    echo -e "  Sandbox Network      󰒙          ON (net)    Sandbox enabled with internet access."
+    echo -e "  Sandbox Restricted   󰴴          ON (no-net) Sandbox enabled with network disabled."
+    echo -e "  Sandbox Off          󰦜          sandbox off Sandbox is disabled (runs on host)."
+    echo -e "  Context Bar          󱍏          ctx         Context window usage bar (10 or 20 segments)."
+    echo -e "  Tokens Sum                     (None)      Total input/output tokens & turn token delta."
+    echo -e "  Sys resources                  sys         Host CPU load average & memory utilization."
+    echo -e "  Artifacts                      artifacts   Number of active output artifacts."
+    echo -e "  Subagents            󱙺          subagents   Number of spawned active subagents."
+    echo -e "  Background Tasks               tasks       Number of background tasks running."
+    echo -e "  Current Directory              ╱           Current working directory path (shortened)."
+    echo -e "  Conversation ID      󰍪          ╱           Short prefix of the current session ID."
+    echo -e "  Quota Reset Time     ⌛️         ⌛          Remaining time until LLM quota resets."
+    echo -e "  Power Mains (AC)     󰚥          AC          Host is connected to external AC power."
+    echo -e "  Power Battery (UPS)  🔋          BAT         Host is running on battery (shows charge %)."
+    exit 0
+  fi
+done
 INPUT_JSON=$(cat)
 
 # ─── ANSI Helpers (Standard colors) ───────────────────────────────────────────
@@ -190,6 +229,10 @@ _tick_countdown() {
 # ─── Parse CLI Arguments & Theme ─────────────────────────────────────────────
 USE_CLASSIC_ICONS=false
 for arg in "$@"; do
+  if [ "$arg" = "--version" ] || [ "$arg" = "-v" ]; then
+    echo "Antigravity CLI Statusline v0.2.2"
+    exit 0
+  fi
   if [ "$arg" = "--compact" ]; then
     COLS=89
   elif [ "$arg" = "--medium" ]; then

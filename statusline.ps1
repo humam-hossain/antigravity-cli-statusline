@@ -6,6 +6,10 @@ $ProgressPreference = 'SilentlyContinue'
 
 # Check for legend parameter before reading stdin
 foreach ($arg in $args) {
+    if ($arg -eq "--version" -or $arg -eq "-v" -or $arg -eq "-Version") {
+        Write-Host "Antigravity CLI Statusline v0.2.2" -ForegroundColor Green
+        exit
+    }
     if ($arg -eq "--legend" -or $arg -eq "-l" -or $arg -eq "-Legend" -or $arg -eq "legend") {
         Write-Host "🚀 Antigravity CLI Statusline Legend" -ForegroundColor Green
         Write-Host "This statusline adapts dynamically to your terminal width and theme settings.`n"
